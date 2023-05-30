@@ -1,5 +1,5 @@
 import { AJAX } from "./helper.js";
-import { URL_API_RECOM, URL_API_TOP } from "./config.js";
+import { URL_API_RECOM, URL_API_TOP, URL_API_SEARCH } from "./config.js";
 
 export const state = {
   recommend: [],
@@ -7,7 +7,8 @@ export const state = {
     min: 0,
     max: 0
   },
-  top: []
+  top: [],
+  search: []
 };
 
 const randomNumber = function () {
@@ -35,6 +36,16 @@ export const loadTop = async function () {
   try {
     const result = await AJAX(`${URL_API_TOP}`);
     state.top = result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export const searchAnime = async function (query) {
+  try {
+    const result = await AJAX(`${URL_API_SEARCH}${query}&sfw`);
+    state.search = result;
   } catch (error) {
     console.error(error);
     throw error;

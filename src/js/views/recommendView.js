@@ -14,7 +14,7 @@ class recommendView extends View {
   _generateMarkupItem(element) {
     return `
       <div class="results__container__item">
-        <img src="${element.entry[0].images.webp.image_url}" loading="lazy">
+        <a href="${element.entry[0].url}" target="_blank"><img src="${element.entry[0].images.webp.image_url}" loading="lazy"></a>
         <p class="results__container__title">${element.entry[0].title}</p>
       </div>
     `

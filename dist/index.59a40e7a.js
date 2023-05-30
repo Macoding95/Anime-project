@@ -581,6 +581,10 @@ var _recommendViewJs = require("./views/recommendView.js");
 var _recommendViewJsDefault = parcelHelpers.interopDefault(_recommendViewJs);
 var _topViewJs = require("./views/topView.js");
 var _topViewJsDefault = parcelHelpers.interopDefault(_topViewJs);
+var _searchViewJs = require("./views/searchView.js");
+var _searchViewJsDefault = parcelHelpers.interopDefault(_searchViewJs);
+var _resultsViewJs = require("./views/resultsView.js");
+var _resultsViewJsDefault = parcelHelpers.interopDefault(_resultsViewJs);
 var _regeneratorRuntime = require("regenerator-runtime");
 const controlResults = async function() {
     await _modelJs.loadAnime();
@@ -590,200 +594,20 @@ const controlTop = async function() {
     await _modelJs.loadTop();
     (0, _topViewJsDefault.default).render(_modelJs.state.top);
 };
+const controlSearchAnime = async function() {
+    const query = (0, _searchViewJsDefault.default).getQuery();
+    if (!query) return;
+    await _modelJs.searchAnime(query);
+    (0, _resultsViewJsDefault.default).render(_modelJs.state.search);
+};
 const init = function() {
     (0, _recommendViewJsDefault.default).addHandlerResults(controlResults);
     (0, _topViewJsDefault.default).addHandlertop(controlTop);
+    (0, _searchViewJsDefault.default).addHandlerSearch(controlSearchAnime);
 };
 init();
 
-},{"./model.js":"Y4A21","./views/recommendView.js":"hWiRK","./views/topView.js":"j7fPP","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","core-js/modules/web.immediate.js":"49tUX","regenerator-runtime":"dXNgZ"}],"Y4A21":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "state", ()=>state);
-parcelHelpers.export(exports, "loadAnime", ()=>loadAnime);
-parcelHelpers.export(exports, "loadTop", ()=>loadTop);
-var _helperJs = require("./helper.js");
-var _configJs = require("./config.js");
-const state = {
-    recommend: [],
-    range: {
-        min: 0,
-        max: 0
-    },
-    top: []
-};
-const randomNumber = function() {
-    const min = Math.floor(Math.random() * 93);
-    const max = min + 8;
-    state.range.min = min;
-    state.range.max = max;
-};
-randomNumber();
-const loadAnime = async function() {
-    try {
-        const result = await (0, _helperJs.AJAX)(`${(0, _configJs.URL_API_RECOM)}`);
-        const data = result.data.slice(state.range.min, state.range.max);
-        state.recommend = data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
-const loadTop = async function() {
-    try {
-        const result = await (0, _helperJs.AJAX)(`${(0, _configJs.URL_API_TOP)}`);
-        state.top = result;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
-
-},{"./helper.js":"lVRAz","./config.js":"k5Hzs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lVRAz":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "AJAX", ()=>AJAX);
-var _configJs = require("./config.js");
-const timeout = function(s) {
-    return new Promise(function(_, reject) {
-        setTimeout(()=>{
-            reject(new Error("Request took too long"));
-        }, s * 1000);
-    });
-};
-const AJAX = async function(url) {
-    try {
-        const result = await Promise.race([
-            fetch(url),
-            timeout((0, _configJs.TIME_OUT))
-        ]);
-        const data = await result.json();
-        if (!result.ok) throw new Error(`${result.message}`);
-        return data;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
-
-},{"./config.js":"k5Hzs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k5Hzs":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "URL_API_RECOM", ()=>URL_API_RECOM);
-parcelHelpers.export(exports, "URL_API_TOP", ()=>URL_API_TOP);
-parcelHelpers.export(exports, "TIME_OUT", ()=>TIME_OUT);
-const URL_API_RECOM = "https://api.jikan.moe/v4/recommendations/anime";
-const URL_API_TOP = "https://api.jikan.moe/v4/top/anime";
-const TIME_OUT = 5;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, "__esModule", {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"hWiRK":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _viewJs = require("./View.js");
-var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
-class recommendView extends (0, _viewJsDefault.default) {
-    _parentElement = document.querySelector(".results");
-    _generateMarkup() {
-        return `
-      <div class="results__container">
-        ${this._data.map(this._generateMarkupItem).join("")}
-      </div>
-    `;
-    }
-    _generateMarkupItem(element) {
-        return `
-      <div class="results__container__item">
-        <img src="${element.entry[0].images.webp.image_url}" loading="lazy">
-        <p class="results__container__title">${element.entry[0].title}</p>
-      </div>
-    `;
-    }
-}
-exports.default = new recommendView();
-
-},{"./View.js":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5cUXS":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-class View {
-    _data;
-    render(data) {
-        if (!data) renderError("");
-        this._data = data;
-        const markup = this._generateMarkup();
-        this._parentElement.insertAdjacentHTML("beforeend", markup);
-    }
-    addHandlerResults(handler) {
-        document.addEventListener("DOMContentLoaded", function(e) {
-            handler();
-        });
-    }
-}
-exports.default = View;
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"j7fPP":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-var _viewJs = require("./View.js");
-var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
-class topView extends (0, _viewJsDefault.default) {
-    _parentElement = document.querySelector(".top");
-    addHandlertop(handler) {
-        document.addEventListener("DOMContentLoaded", handler);
-    }
-    _generateMarkup() {
-        console.log(this._data.data);
-        return `
-      <div class="top__container">
-        ${this._data.data.slice(0, 4).map(this._generateMarkupItem).join("")}
-      </div>
-    `;
-    }
-    _generateMarkupItem(element) {
-        return `
-      <div class="top__container__item">
-        <img src="${element.images.webp.image_url}" loading="lazy">
-        <div class="top__container__info">
-          <h2 class="top__container__title">${element.title}</h2>
-          <span class="top__container__score">${element.score}</span>
-          <p class="top__container__synopsis">${element.synopsis.split(" ").slice(0, 25).join(" ").concat("...")}</p>
-        </div>
-      </div>
-    `;
-    }
-}
-exports.default = new topView();
-
-},{"./View.js":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"49tUX":[function(require,module,exports) {
+},{"core-js/modules/web.immediate.js":"49tUX","./model.js":"Y4A21","./views/recommendView.js":"hWiRK","./views/topView.js":"j7fPP","./views/searchView.js":"9OQAM","./views/resultsView.js":"cSbZE","regenerator-runtime":"dXNgZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"49tUX":[function(require,module,exports) {
 // TODO: Remove this module from `core-js@4` since it's split to modules listed below
 require("52e9b3eefbbce1ed");
 require("292fa64716f5b39e");
@@ -2095,7 +1919,261 @@ module.exports = function(scheduler, hasTimeArg) {
 },{"373dd417176da2c5":"i8HOC","a68ecfcbf29c46f6":"148ka","7087588d33667af2":"l3Kyn","7679d27a979f2651":"2BA6V","7493ba8d8bb8623d":"73xBt","cff2c830bdea4f24":"RsFXo","58a74f00cee1ac64":"b9O3D"}],"2BA6V":[function(require,module,exports) {
 /* global Bun -- Deno case */ module.exports = typeof Bun == "function" && Bun && typeof Bun.version == "string";
 
-},{}],"dXNgZ":[function(require,module,exports) {
+},{}],"Y4A21":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "state", ()=>state);
+parcelHelpers.export(exports, "loadAnime", ()=>loadAnime);
+parcelHelpers.export(exports, "loadTop", ()=>loadTop);
+parcelHelpers.export(exports, "searchAnime", ()=>searchAnime);
+var _helperJs = require("./helper.js");
+var _configJs = require("./config.js");
+const state = {
+    recommend: [],
+    range: {
+        min: 0,
+        max: 0
+    },
+    top: [],
+    search: []
+};
+const randomNumber = function() {
+    const min = Math.floor(Math.random() * 93);
+    const max = min + 8;
+    state.range.min = min;
+    state.range.max = max;
+};
+randomNumber();
+const loadAnime = async function() {
+    try {
+        const result = await (0, _helperJs.AJAX)(`${(0, _configJs.URL_API_RECOM)}`);
+        const data = result.data.slice(state.range.min, state.range.max);
+        state.recommend = data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+const loadTop = async function() {
+    try {
+        const result = await (0, _helperJs.AJAX)(`${(0, _configJs.URL_API_TOP)}`);
+        state.top = result;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+const searchAnime = async function(query) {
+    try {
+        const result = await (0, _helperJs.AJAX)(`${(0, _configJs.URL_API_SEARCH)}${query}&sfw`);
+        state.search = result;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+},{"./helper.js":"lVRAz","./config.js":"k5Hzs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"lVRAz":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "AJAX", ()=>AJAX);
+var _configJs = require("./config.js");
+const timeout = function(s) {
+    return new Promise(function(_, reject) {
+        setTimeout(()=>{
+            reject(new Error("Request took too long"));
+        }, s * 1000);
+    });
+};
+const AJAX = async function(url) {
+    try {
+        const result = await Promise.race([
+            fetch(url),
+            timeout((0, _configJs.TIME_OUT))
+        ]);
+        const data = await result.json();
+        if (!result.ok) throw new Error(`${result.message}`);
+        return data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+},{"./config.js":"k5Hzs","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k5Hzs":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "URL_API_RECOM", ()=>URL_API_RECOM);
+parcelHelpers.export(exports, "URL_API_TOP", ()=>URL_API_TOP);
+parcelHelpers.export(exports, "URL_API_SEARCH", ()=>URL_API_SEARCH);
+parcelHelpers.export(exports, "TIME_OUT", ()=>TIME_OUT);
+const URL_API_RECOM = "https://api.jikan.moe/v4/recommendations/anime";
+const URL_API_TOP = "https://api.jikan.moe/v4/top/anime";
+const URL_API_SEARCH = "https://api.jikan.moe/v4/anime?q=";
+const TIME_OUT = 5;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"hWiRK":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _viewJs = require("./View.js");
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+class recommendView extends (0, _viewJsDefault.default) {
+    _parentElement = document.querySelector(".results");
+    _generateMarkup() {
+        return `
+      <div class="results__container">
+        ${this._data.map(this._generateMarkupItem).join("")}
+      </div>
+    `;
+    }
+    _generateMarkupItem(element) {
+        return `
+      <div class="results__container__item">
+        <a href="${element.entry[0].url}" target="_blank"><img src="${element.entry[0].images.webp.image_url}" loading="lazy"></a>
+        <p class="results__container__title">${element.entry[0].title}</p>
+      </div>
+    `;
+    }
+}
+exports.default = new recommendView();
+
+},{"./View.js":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5cUXS":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class View {
+    _data;
+    render(data) {
+        this._data = data;
+        const markup = this._generateMarkup();
+        this._parentElement.insertAdjacentHTML("beforeend", markup);
+    }
+    clear() {
+        this._parentElement.innerHTML = "";
+    }
+    addHandlerResults(handler) {
+        document.addEventListener("DOMContentLoaded", function(e) {
+            handler();
+        });
+    }
+}
+exports.default = View;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"j7fPP":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _viewJs = require("./View.js");
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+class topView extends (0, _viewJsDefault.default) {
+    _parentElement = document.querySelector(".top");
+    addHandlertop(handler) {
+        document.addEventListener("DOMContentLoaded", handler);
+    }
+    _generateMarkup() {
+        return `
+      <div class="top__container">
+        ${this._data.data.slice(0, 4).map(this._generateMarkupItem).join("")}
+      </div>
+    `;
+    }
+    _generateMarkupItem(element) {
+        return `
+      <div class="top__container__item">
+        <a href="${element.url}" target="_blank"><img src="${element.images.webp.image_url}" loading="lazy"></a>
+        <div class="top__container__info">
+          <h2 class="top__container__title">${element.title}</h2>
+          <span class="top__container__score">${element.score}</span>
+          <p class="top__container__synopsis">${element.synopsis.split(" ").slice(0, 25).join(" ").concat("...")}</p>
+        </div>
+      </div>
+    `;
+    }
+}
+exports.default = new topView();
+
+},{"./View.js":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9OQAM":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _viewJs = require("./View.js");
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+class SearchView extends (0, _viewJsDefault.default) {
+    _parentElement = document.querySelector("#form-search");
+    getQuery() {
+        const query = this._parentElement.querySelector("#search-anime").value;
+        this._clearInput();
+        return query;
+    }
+    addHandlerSearch(handler) {
+        this._parentElement.addEventListener("submit", function(e) {
+            e.preventDefault();
+            handler();
+        });
+    }
+    _clearInput() {
+        this._parentElement.querySelector("#search-anime").value = "";
+    }
+}
+exports.default = new SearchView();
+
+},{"./View.js":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cSbZE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _viewJs = require("./View.js");
+var _viewJsDefault = parcelHelpers.interopDefault(_viewJs);
+class ResultsView extends (0, _viewJsDefault.default) {
+    _parentElement = document.querySelector(".search__results");
+    _generateMarkup() {
+        this._activeMarkup();
+        const data = this._data.data;
+        console.log(data);
+        if (data.length === 0) return `
+      <p class="search__results__noresult">There's no result for your word, try another :)</p>      
+      `;
+        else return `
+        <div class="search__results__main">
+        <h2 class="search__results__title">${data[0].title}</h2>
+        <h3 class="search__results__subtitle">${data[0].episodes} Episodes</h3>
+        ${data[0].trailer.embed_url ? `<iframe src="${data[0].trailer.embed_url}" frameborder="0"></iframe>` : `<a href="${data[0].url}]}" target="_blank"><img src="${data[0].images.webp.image_url}" loading="lazy"></a>`} 
+      </div>
+      `;
+    }
+    _activeMarkup() {
+        this._parentElement.classList.add("search__results--active");
+        this.clear();
+    }
+}
+exports.default = new ResultsView();
+
+},{"./View.js":"5cUXS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dXNgZ":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *

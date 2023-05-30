@@ -2,12 +2,13 @@ export default class View {
   _data;
 
   render(data) {
-    if (!data)
-      renderError("")
-
     this._data = data;
     const markup = this._generateMarkup();
     this._parentElement.insertAdjacentHTML('beforeend', markup);
+  }
+
+  clear() {
+    this._parentElement.innerHTML = '';
   }
 
   addHandlerResults(handler) {
