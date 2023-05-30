@@ -1,0 +1,91 @@
+@use '../base/variables' as *;
+
+.top {
+  width: 90%;
+  max-width: 1000px;
+  margin: 4rem auto;
+
+  &__title {
+    font-family: monospace;
+    font-size: 32px;
+    color: $white;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+
+    &__item {
+      text-align: center;
+
+      img {
+        border: 3px solid $primary--color;
+        box-sizing: border-box;
+      }
+    }
+
+    &__info {
+      margin-top: 1.5rem;
+    }
+
+    &__title {
+      font-family: monospace;
+      font-size: 20px;
+      color: $white;
+      margin-bottom: 0.5rem;
+    }
+
+    &__score {
+      font-family: monospace;
+      font-size: 20px;
+      color: $primary--color;
+      position: relative;
+    }
+
+    &__score::before {
+      content: "⭐";
+      position: absolute;
+      left: -3rem;
+      top: -0.5rem;
+    }
+
+    &__synopsis {
+      text-align: left;
+      font-family: monospace;
+      font-size: 16px;
+      color: $white;
+    }
+  }
+}
+
+@include desktop {
+  .top {
+    &__container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &__item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    &__title,
+    &__score {
+      font-size: 26px;
+    }
+
+    &__score::before {
+      left: -3.5rem;
+    }
+
+    &__synopsis {
+      font-size: 18px;
+    }
+  }
+}

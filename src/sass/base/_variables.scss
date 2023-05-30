@@ -1,0 +1,16 @@
+/* Screens */
+$desktop: 975px;
+
+/* Colors */
+$primary--background: #121212;
+$primary--color: #dc6d13;
+
+$red: #db1010;
+$white: #fff;
+
+/* Mixins */
+@mixin desktop {
+  @media (min-width: $desktop) {
+    @content;
+  }
+}

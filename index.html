@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./src/css/css.css">
+  <link rel="stylesheet" href="./src/sass/main.scss">
   <title>Document</title>
 </head>
 
@@ -19,9 +19,9 @@
         <form action="" class="frmsearch" id="form-search">
           <div class="item">
             <label for="name">Type the anime/character that you want to see</label>
-            <input type="text" name="name" placeholder="Anime" id="search-anime">
+            <input type="text" name="name" placeholder="Anime" id="search-anime" class="frmsearch__input">
           </div>
-          <input type="submit" value="Search">
+          <input type="submit" value="Search" class="frmsearch__submit">
         </form>
       </div>
       <div class="search__results"></div>
